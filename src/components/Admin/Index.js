@@ -1,8 +1,5 @@
 import React from "react";
 
-import * as ROLES from "../../constants/roles";
-import withAuthorization from "../Home/Index";
-
 const AdminPage = () => (
   <div>
     <h1>Admin</h1>
@@ -10,6 +7,4 @@ const AdminPage = () => (
   </div>
 );
 
-const condition = authUser => authUser && authUser.roles.includes(ROLES.ADMIN);
-
-export default withAuthorization(condition)(AdminPage);
+export default AdminPage;
