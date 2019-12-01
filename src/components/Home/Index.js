@@ -50,19 +50,22 @@ class MessagesBase extends Component {
   componentDidMount() {
     this.setState({ loading: true });
 
-    this.props.firebase.messages().on("value", snapshot => {
-      const messageObject = snapshot.val();
-      if (messageObject) {
-        // conver message list from snapshot
-        const messageList = Object.keys(messageObject).map(key => ({
-          ...messageObject[key],
-          uid: key
-        }));
-        this.setState({ messages: messageList, loading: false });
-      } else {
-        this.setState({ messages: null, loading: false });
-      }
-    });
+    this.props.firebase
+      .messages()
+      .orderByChild("createdAt")
+      .on("value", snapshot => {
+        const messageObject = snapshot.val();
+        if (messageObject) {
+          // conver message list from snapshot
+          const messageList = Object.keys(messageObject).map(key => ({
+            ...messageObject[key],
+            uid: key
+          }));
+          this.setState({ messages: messageList, loading: false });
+        } else {
+          this.setState({ messages: null, loading: false });
+        }
+      });
   }
   componentWillUnmount() {
     this.props.firebase.messages().off();
