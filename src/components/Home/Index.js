@@ -22,7 +22,8 @@ class MessagesBase extends Component {
     this.state = {
       text: "",
       loading: false,
-      messages: []
+      messages: [],
+      limit: 5
     };
   }
   onChangeText = event => {
@@ -47,12 +48,22 @@ class MessagesBase extends Component {
       editedAt: this.props.firebase.serverValue.TIMESTAMP
     });
   };
+  onNextPage = () => {
+    this.setState(
+      state => ({ limit: state.limit + 5 }),
+      this.onListenForMessages
+    );
+  };
   componentDidMount() {
+    this.onListenForMessages();
+  }
+  onListenForMessages() {
     this.setState({ loading: true });
 
     this.props.firebase
       .messages()
       .orderByChild("createdAt")
+      .limitToLast(this.state.limit)
       .on("value", snapshot => {
         const messageObject = snapshot.val();
         if (messageObject) {
@@ -78,6 +89,11 @@ class MessagesBase extends Component {
       <AuthUserContext.Consumer>
         {authUser => (
           <div>
+            {!loading && messages && (
+              <button type="button" onClick={this.onNextPage}>
+                More
+              </button>
+            )}
             {loading && <div>Loading....</div>}
             {messages ? (
               <MessageList
